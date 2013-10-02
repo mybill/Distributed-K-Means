@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import sys
-import numpy as np
 
 def output(cid, count, sum):
 	if cid!='':
@@ -12,18 +11,20 @@ def output(cid, count, sum):
 def run():
 	last_cid = ''
 	count = 0
-	sum = np.zeros(size)
+	sum = [0]*size
 	for line in sys.stdin:
 		cols = line.strip().split('\t')
 		cid = cols[0]
 		if cid==last_cid:
 			count += int(cols[1])
-			sum += np.array(cols[2:], float)
+			for i in xrange(size):
+				sum[i] += float(cols[i+2])
 		else:
 			output(last_cid, count, sum)
 			last_cid = cid
 			count = int(cols[1])
-			sum = np.array(cols[2:], float)
+			for i in xrange(size):
+				sum[i] = float(cols[i+2])
 	output(last_cid, count, sum)
 
 if __name__ == '__main__':
