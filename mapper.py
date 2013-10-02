@@ -1,6 +1,14 @@
 #!/usr/bin/python
 import sys, math
 
+def read_centers(iter):
+	fc = open('centers_'+iter)
+	for line in fc:
+		cols = line.strip().split('\t')
+		cid = int(cols[0])
+		centers[cid] = cols[2:]
+	fc.close()
+
 def comp_dist(X,Y):
 	sum = 0
 	for i in xrange(len(X)):
@@ -15,15 +23,6 @@ def argmin(X):
 			cid = i
 			min = x
 	return cid
-
-def read_centers():
-	fc = open('centers_'+sys.argv[1])
-	for line in fc:
-		cols = line.strip().split('\t')
-		cid = int(cols[0])
-		for j in xrange(size):
-			centers[cid][j] = float(cols[j+2])
-	fc.close()
 
 def run():
 	dist = [0]*K
@@ -47,8 +46,9 @@ def run():
 		print ''
 
 if __name__ == '__main__':
-	K = 3
-	size = 2
+	iter = sys.argv[1]
+	size = int(sys.argv[2])
+	K = int(sys.argv[3])
 	centers = [[0 for col in range(size)] for row in range(K)]
-	read_centers()
+	read_centers(iter)
 	run()

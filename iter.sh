@@ -1,12 +1,12 @@
 #!/bin/sh
 HADOOP="/home/work/hadoop-client/hadoop/bin/hadoop"
-OUTPUT="/app/ecom/fcr/maoyi01/kmeans/centers_$((${1}+1))"
+OUTPUT="${4}/centers_$((${1}+1))"
 
 ${HADOOP} streaming \
-	-input "/app/ecom/fcr/maoyi01/kmeans/datas" \
+	-input "${4}/datas" \
 	-output ${OUTPUT} \
-	-mapper "python26/bin/python26.sh mapper.py ${1}" \
-	-reducer "python26/bin/python26.sh reducer.py" \
+	-mapper "python26/bin/python26.sh mapper.py ${1} ${2} ${3}" \
+	-reducer "python26/bin/python26.sh reducer.py ${2}" \
 	-file mapper.py \
 	-file reducer.py \
 	-file centers_${1} \

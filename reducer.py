@@ -28,5 +28,5 @@ def run():
 	output(last_cid, count, sum)
 
 if __name__ == '__main__':
-	size = 2
+	size = int(sys.argv[1])
 	run()

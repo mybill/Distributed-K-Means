@@ -3,3 +3,15 @@ MaoYi
 
 10-1:
 简易的mapper与reducer
+
+10-2:
+用Hadoop streaming实现分布式运行的脚本。
+RUN：python run.py data_file size K hdfs_dir
+	data_file -- 数据文件
+	size -- 属性数量
+	K -- 类的数量
+	hdfs_dir -- Hadoop HDFS目录
+
+过程：随机生成K个中心点，调用iter.sh循环重新计算结点，直至中心点不再变化
+	mapper：输入instance，读取cluster_centers文件，输出(cluster_id, count, sum)
+	reducer：输出(cluster_id, count, cluster_center)

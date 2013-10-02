@@ -1,8 +1,14 @@
 #!/usr/bin/python
-import sys, random, os
+import sys, random, os, math
 
-def init_centers():
-	fin = open('datas')
+def upload_data(data_file, hdfs_dir):
+	cmd = 'hadoop fs -mkdir %s' % (hdfs_dir)
+	os.system(cmd)
+	cmd = 'hadoop fs -put %s %s/datas' % (data_file, hdfs_dir)
+	os.system(cmd)
+
+def init_centers(data_file, K):
+	fin = open(data_file)
 	lines = fin.readlines()
 	fin.close()
 
@@ -15,27 +21,37 @@ def init_centers():
 		cid += 1
 	fout.close()
 
-def read_centers(filename):
+def comp_dist(X,Y):
+	sum = 0
+	for i in xrange(len(X)):
+		sum += math.pow((float(X[i])-float(Y[i])), 2)
+	return math.sqrt(sum)
+
+def comp_diff(iter):
 	diff = 0
-	fc = open(filename)
+	fc = open('centers_'+str(iter+1))
 	for line in fc:
 		cols = line.strip().split('\t')
 		cid = int(cols[0])
-		diff += abs(count[cid] - int(cols[1]))##
-		count[cid] = int(cols[1])
-		#for j in xrange(size):	
-			#centers[cid][j] = float(cols[j+2])
+		diff += comp_dist(centers[cid], cols[2:])
+		centers[cid] = cols[2:]
 	fc.close()
 	return diff
-	
+
 if __name__ == '__main__':
-	K = 3
-	size =2
-	init_centers()
-	centers = [[0 for col in range(size)] for row in range(K)]
-	count = [0]*K
-	for i in xrange(100):
-		cmd = "./iter.sh %d" % (i)
-		os.system(cmd)
-		if read_centers('centers_'+str(i+1))==0:
-			break
+	if len(sys.argv)!=5:
+		print 'RUN: python run.py data_file size K hdfs_dir'
+	else:
+		data_file = sys.argv[1]
+		size = int(sys.argv[2])
+		K = int(sys.argv[3])
+		hdfs_dir = sys.argv[4]
+	
+		upload_data(data_file, hdfs_dir)
+		init_centers(data_file, K)
+		centers = [[0 for col in range(size)] for row in range(K)]
+		for iter in xrange(200):
+			cmd = "./iter.sh %d %d %d %s" % (iter,size,K,hdfs_dir)
+			os.system(cmd)
+			if comp_diff(iter)<1e-15:
+				break
