@@ -8,23 +8,25 @@ def upload_data(data_file, hdfs_dir):
 	os.system(cmd)
 
 def init_centers(data_file, K):
+	dict = {}
 	fin = open(data_file)
-	lines = fin.readlines()
+	for line in fin:
+		dict[line] = 1
 	fin.close()
 
-	centers = random.sample(range(len(lines)), K)
+	cs = random.sample(dict, K)
 	fout = open('centers_0','w')
 	cid = 0
-	for t in centers:
-		cols = lines[t].strip().split('\t')
-		fout.write( '%d\t\t%f\t%f\n' % (cid, float(cols[0]), float(cols[1])) )
+	for t in cs:
+		fout.write( '%d\t\t%s' % (cid, t) )
 		cid += 1
 	fout.close()
+	return len(cs[0].strip().split('\t'))
 
 def comp_dist(X,Y):
 	sum = 0
 	for i in xrange(len(X)):
-		sum += math.pow((float(X[i])-float(Y[i])), 2)
+		sum += math.pow((X[i]-Y[i]), 2)
 	return math.sqrt(sum)
 
 def comp_diff(iter):
@@ -33,25 +35,25 @@ def comp_diff(iter):
 	for line in fc:
 		cols = line.strip().split('\t')
 		cid = int(cols[0])
-		diff += comp_dist(centers[cid], cols[2:])
-		centers[cid] = cols[2:]
+		cc = map(float, cols[2:])
+		diff += comp_dist(centers[cid], cc)
+		centers[cid] = cc
 	fc.close()
 	return diff
 
 if __name__ == '__main__':
-	if len(sys.argv)!=5:
-		print 'RUN: python run.py data_file size K hdfs_dir'
+	if len(sys.argv)!=4:
+		print 'RUN: python run.py data_file K hdfs_dir'
 	else:
 		data_file = sys.argv[1]
-		size = int(sys.argv[2])
-		K = int(sys.argv[3])
-		hdfs_dir = sys.argv[4]
+		K = int(sys.argv[2])
+		hdfs_dir = sys.argv[3]
 	
 		upload_data(data_file, hdfs_dir)
-		init_centers(data_file, K)
+		size = init_centers(data_file, K)
 		centers = [[0 for col in range(size)] for row in range(K)]
 		for iter in xrange(200):
-			cmd = "./iter.sh %d %d %d %s" % (iter,size,K,hdfs_dir)
+			cmd = "./iter.sh %d %s" % (iter, hdfs_dir)
 			os.system(cmd)
 			if comp_diff(iter)<1e-15:
 				break

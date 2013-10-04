@@ -2,16 +2,21 @@
 import sys
 
 def output(cid, count, sum):
-	if cid!='':
-		print '%s\t%d' % (cid, count),
-		for i in sum:
-			print '\t%f' % (i/count),
-		print ''
+	print '%s\t%d' % (cid, count),
+	for i in sum:
+		print '\t%f' % (i/count),
+	print ''
 
-def run():
-	last_cid = ''
-	count = 0
+if __name__ == '__main__':
+	cols = sys.stdin.readline().strip().split('\t')
+	size = len(cols)-2
 	sum = [0]*size
+
+	last_cid = cols[0]
+	count = int(cols[1])
+	for i in xrange(size):
+		sum[i] = float(cols[i+2])
+	
 	for line in sys.stdin:
 		cols = line.strip().split('\t')
 		cid = cols[0]
@@ -26,7 +31,3 @@ def run():
 			for i in xrange(size):
 				sum[i] = float(cols[i+2])
 	output(last_cid, count, sum)
-
-if __name__ == '__main__':
-	size = int(sys.argv[1])
-	run()

@@ -1,12 +1,12 @@
 #!/bin/sh
 HADOOP="/home/work/hadoop-client/hadoop/bin/hadoop"
-OUTPUT="${4}/centers_$((${1}+1))"
+OUTPUT="${2}/centers_$((${1}+1))"
 
 ${HADOOP} streaming \
-	-input "${4}/datas" \
+	-input "${2}/datas" \
 	-output ${OUTPUT} \
-	-mapper "python26/bin/python26.sh mapper.py ${1} ${2} ${3}" \
-	-reducer "python26/bin/python26.sh reducer.py ${2}" \
+	-mapper "python26/bin/python26.sh mapper.py ${1}" \
+	-reducer "python26/bin/python26.sh reducer.py" \
 	-file mapper.py \
 	-file reducer.py \
 	-file centers_${1} \
