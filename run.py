@@ -36,7 +36,7 @@ def comp_diff(iter):
 		cols = line.strip().split('\t')
 		cid = int(cols[0])
 		cc = map(float, cols[2:])
-		diff += comp_dist(centers[cid], cc)
+		diff += math.pow(comp_dist(centers[cid],cc), 2)
 		centers[cid] = cc
 	fc.close()
 	return diff
@@ -53,7 +53,8 @@ if __name__ == '__main__':
 		size = init_centers(data_file, K)
 		centers = [[0 for col in range(size)] for row in range(K)]
 		for iter in xrange(200):
+			print 'iteration %d ...' % (iter)
 			cmd = "./iter.sh %d %s" % (iter, hdfs_dir)
 			os.system(cmd)
-			if comp_diff(iter)<1e-15:
+			if comp_diff(iter)<1e-8:
 				break
